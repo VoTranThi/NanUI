@@ -1,32 +1,8 @@
-// Copyright (c) 2014-2015 Wolfgang Borgsmüller
+// Copyright (c) 2014-2017 Wolfgang Borgsmüller
 // All rights reserved.
 // 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
-// are met:
-// 
-// 1. Redistributions of source code must retain the above copyright 
-//    notice, this list of conditions and the following disclaimer.
-// 
-// 2. Redistributions in binary form must reproduce the above copyright 
-//    notice, this list of conditions and the following disclaimer in the 
-//    documentation and/or other materials provided with the distribution.
-// 
-// 3. Neither the name of the copyright holder nor the names of its 
-//    contributors may be used to endorse or promote products derived 
-//    from this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-// COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-// BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-// OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
-// TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
-// USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// This software may be modified and distributed under the terms
+// of the BSD license. See the License.txt file for details.
 
 // Generated file. Do not edit.
 
@@ -45,24 +21,27 @@ namespace Chromium.Remote {
     /// See also the original CEF documentation in
     /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
     /// </remarks>
-    public class CfrFrame : CfrBase {
+    public class CfrFrame : CfrBaseLibrary {
 
-        internal static CfrFrame Wrap(IntPtr proxyId) {
-            if(proxyId == IntPtr.Zero) return null;
+        internal static CfrFrame Wrap(RemotePtr remotePtr) {
+            if(remotePtr == RemotePtr.Zero) return null;
             var weakCache = CfxRemoteCallContext.CurrentContext.connection.weakCache;
-            lock(weakCache) {
-                var cfrObj = (CfrFrame)weakCache.Get(proxyId);
-                if(cfrObj == null) {
-                    cfrObj = new CfrFrame(proxyId);
-                    weakCache.Add(proxyId, cfrObj);
-                }
-                return cfrObj;
+            bool isNew = false;
+            var wrapper = (CfrFrame)weakCache.GetOrAdd(remotePtr.ptr, () =>  {
+                isNew = true;
+                return new CfrFrame(remotePtr);
+            });
+            if(!isNew) {
+                var call = new CfxApiReleaseRemoteCall();
+                call.nativePtr = remotePtr.ptr;
+                call.RequestExecution(remotePtr.connection);
             }
+            return wrapper;
         }
 
 
 
-        private CfrFrame(IntPtr proxyId) : base(proxyId) {}
+        private CfrFrame(RemotePtr remotePtr) : base(remotePtr) {}
 
         /// <summary>
         /// True if this object is currently attached to a valid frame.
@@ -73,9 +52,10 @@ namespace Chromium.Remote {
         /// </remarks>
         public bool IsValid {
             get {
-                var call = new CfxFrameIsValidRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameIsValidRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
                 return call.__retval;
             }
         }
@@ -89,9 +69,10 @@ namespace Chromium.Remote {
         /// </remarks>
         public bool IsMain {
             get {
-                var call = new CfxFrameIsMainRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameIsMainRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
                 return call.__retval;
             }
         }
@@ -105,9 +86,10 @@ namespace Chromium.Remote {
         /// </remarks>
         public bool IsFocused {
             get {
-                var call = new CfxFrameIsFocusedRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameIsFocusedRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
                 return call.__retval;
             }
         }
@@ -125,9 +107,10 @@ namespace Chromium.Remote {
         /// </remarks>
         public string Name {
             get {
-                var call = new CfxFrameGetNameRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameGetNameRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
                 return call.__retval;
             }
         }
@@ -142,9 +125,10 @@ namespace Chromium.Remote {
         /// </remarks>
         public long Identifier {
             get {
-                var call = new CfxFrameGetIdentifierRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameGetIdentifierRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
                 return call.__retval;
             }
         }
@@ -159,10 +143,11 @@ namespace Chromium.Remote {
         /// </remarks>
         public CfrFrame Parent {
             get {
-                var call = new CfxFrameGetParentRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
-                return CfrFrame.Wrap(call.__retval);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameGetParentRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
+                return CfrFrame.Wrap(new RemotePtr(connection, call.__retval));
             }
         }
 
@@ -175,9 +160,10 @@ namespace Chromium.Remote {
         /// </remarks>
         public string Url {
             get {
-                var call = new CfxFrameGetUrlRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameGetUrlRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
                 return call.__retval;
             }
         }
@@ -191,10 +177,11 @@ namespace Chromium.Remote {
         /// </remarks>
         public CfrBrowser Browser {
             get {
-                var call = new CfxFrameGetBrowserRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
-                return CfrBrowser.Wrap(call.__retval);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameGetBrowserRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
+                return CfrBrowser.Wrap(new RemotePtr(connection, call.__retval));
             }
         }
 
@@ -208,10 +195,11 @@ namespace Chromium.Remote {
         /// </remarks>
         public CfrV8Context V8Context {
             get {
-                var call = new CfxFrameGetV8ContextRenderProcessCall();
-                call.self = CfrObject.Unwrap(this);
-                call.RequestExecution(this);
-                return CfrV8Context.Wrap(call.__retval);
+                var connection = RemotePtr.connection;
+                var call = new CfxFrameGetV8ContextRemoteCall();
+                call.@this = RemotePtr.ptr;
+                call.RequestExecution(connection);
+                return CfrV8Context.Wrap(new RemotePtr(connection, call.__retval));
             }
         }
 
@@ -223,9 +211,10 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void Undo() {
-            var call = new CfxFrameUndoRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameUndoRemoteCall();
+            call.@this = RemotePtr.ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -236,9 +225,10 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void Redo() {
-            var call = new CfxFrameRedoRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameRedoRemoteCall();
+            call.@this = RemotePtr.ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -249,9 +239,10 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void Cut() {
-            var call = new CfxFrameCutRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameCutRemoteCall();
+            call.@this = RemotePtr.ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -262,9 +253,10 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void Copy() {
-            var call = new CfxFrameCopyRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameCopyRemoteCall();
+            call.@this = RemotePtr.ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -275,9 +267,10 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void Paste() {
-            var call = new CfxFramePasteRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFramePasteRemoteCall();
+            call.@this = RemotePtr.ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -288,9 +281,10 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void Delete() {
-            var call = new CfxFrameDelRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameDelRemoteCall();
+            call.@this = RemotePtr.ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -301,9 +295,10 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void SelectAll() {
-            var call = new CfxFrameSelectAllRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameSelectAllRemoteCall();
+            call.@this = RemotePtr.ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -315,10 +310,12 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void GetSource(CfrStringVisitor visitor) {
-            var call = new CfxFrameGetSourceRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.visitor = CfrObject.Unwrap(visitor);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameGetSourceRemoteCall();
+            call.@this = RemotePtr.ptr;
+            if(!CfrObject.CheckConnection(visitor, connection)) throw new ArgumentException("Render process connection mismatch.", "visitor");
+            call.visitor = CfrObject.Unwrap(visitor).ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -330,10 +327,12 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void GetText(CfrStringVisitor visitor) {
-            var call = new CfxFrameGetTextRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.visitor = CfrObject.Unwrap(visitor);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameGetTextRemoteCall();
+            call.@this = RemotePtr.ptr;
+            if(!CfrObject.CheckConnection(visitor, connection)) throw new ArgumentException("Render process connection mismatch.", "visitor");
+            call.visitor = CfrObject.Unwrap(visitor).ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -344,10 +343,12 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void LoadRequest(CfrRequest request) {
-            var call = new CfxFrameLoadRequestRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.request = CfrObject.Unwrap(request);
-            call.RequestExecution(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameLoadRequestRemoteCall();
+            call.@this = RemotePtr.ptr;
+            if(!CfrObject.CheckConnection(request, connection)) throw new ArgumentException("Render process connection mismatch.", "request");
+            call.request = CfrObject.Unwrap(request).ptr;
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -358,10 +359,11 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void LoadUrl(string url) {
-            var call = new CfxFrameLoadUrlRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameLoadUrlRemoteCall();
+            call.@this = RemotePtr.ptr;
             call.url = url;
-            call.RequestExecution(this);
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -374,11 +376,12 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void LoadString(string stringVal, string url) {
-            var call = new CfxFrameLoadStringRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameLoadStringRemoteCall();
+            call.@this = RemotePtr.ptr;
             call.stringVal = stringVal;
             call.url = url;
-            call.RequestExecution(this);
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -393,12 +396,13 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void ExecuteJavaScript(string code, string scriptUrl, int startLine) {
-            var call = new CfxFrameExecuteJavaScriptRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameExecuteJavaScriptRemoteCall();
+            call.@this = RemotePtr.ptr;
             call.code = code;
             call.scriptUrl = scriptUrl;
             call.startLine = startLine;
-            call.RequestExecution(this);
+            call.RequestExecution(connection);
         }
 
         /// <summary>
@@ -410,14 +414,12 @@ namespace Chromium.Remote {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_frame_capi.h">cef/include/capi/cef_frame_capi.h</see>.
         /// </remarks>
         public void VisitDom(CfrDomVisitor visitor) {
-            var call = new CfxFrameVisitDomRenderProcessCall();
-            call.self = CfrObject.Unwrap(this);
-            call.visitor = CfrObject.Unwrap(visitor);
-            call.RequestExecution(this);
-        }
-
-        internal override void OnDispose(IntPtr proxyId) {
-            connection.weakCache.Remove(proxyId);
+            var connection = RemotePtr.connection;
+            var call = new CfxFrameVisitDomRemoteCall();
+            call.@this = RemotePtr.ptr;
+            if(!CfrObject.CheckConnection(visitor, connection)) throw new ArgumentException("Render process connection mismatch.", "visitor");
+            call.visitor = CfrObject.Unwrap(visitor).ptr;
+            call.RequestExecution(connection);
         }
     }
 }

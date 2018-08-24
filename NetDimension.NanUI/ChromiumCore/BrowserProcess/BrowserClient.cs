@@ -1,48 +1,21 @@
-// Copyright (c) 2014-2015 Wolfgang Borgsmüller
+// Copyright (c) 2014-2017 Wolfgang Borgsmüller
 // All rights reserved.
 // 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
-// are met:
-// 
-// 1. Redistributions of source code must retain the above copyright 
-//    notice, this list of conditions and the following disclaimer.
-// 
-// 2. Redistributions in binary form must reproduce the above copyright 
-//    notice, this list of conditions and the following disclaimer in the 
-//    documentation and/or other materials provided with the distribution.
-// 
-// 3. Neither the name of the copyright holder nor the names of its 
-//    contributors may be used to endorse or promote products derived 
-//    from this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-// COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-// BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-// OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
-// TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
-// USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// This software may be modified and distributed under the terms
+// of the BSD license. See the License.txt file for details.
 
-
-
-
+using System;
 using Chromium;
+using Chromium.Event;
 
-namespace NetDimension.NanUI.ChromiumCore
-{
-	internal class BrowserClient : CfxClient  {
+namespace Chromium.WebBrowser {
+    internal class BrowserClient : CfxClient  {
 
-        internal IChromiumWebBrowser browser;
+        internal BrowserCore browser;
 
-        internal LifeSpanHandler lifeSpanHandler;
-		internal RequestHandler requestHandler;
-        
-        private CfxContextMenuHandler contextMenuHandler;
+		private CfxLifeSpanHandler lifeSpanHandler;
+		private CfxRequestHandler requestHandler;
+		private CfxContextMenuHandler contextMenuHandler;
         private CfxLoadHandler loadHandler;
         private CfxDisplayHandler displayHandler;
         private CfxDownloadHandler downloadHandler;
@@ -53,19 +26,38 @@ namespace NetDimension.NanUI.ChromiumCore
         private CfxGeolocationHandler geolocationHandler;
         private CfxJsDialogHandler jsDialogHandler;
         private CfxKeyboardHandler keyboardHandler;
-		private CfxRenderHandler renderHandler;
 
-
-        internal BrowserClient(IChromiumWebBrowser browser) {
+        internal BrowserClient(BrowserCore browser) {
             this.browser = browser;
-            this.lifeSpanHandler = new LifeSpanHandler(this);
-            this.requestHandler = new RequestHandler(this);
+			lifeSpanHandler = new CfxLifeSpanHandler();
 
+			lifeSpanHandler.OnAfterCreated += (handler, e) => this.browser.OnBrowserCreated(e);
+			lifeSpanHandler.OnBeforePopup += (handler, e) =>
+			{
+				var windowinfo = e.WindowInfo;
+				//fix: the popup window show on incorrect position
+			};
+			this.GetLifeSpanHandler += (handler, e) => e.SetReturnValue(lifeSpanHandler);
+		}
+		internal CfxLifeSpanHandler LifeSpanHandler
+		{
+			get
+			{
+				return lifeSpanHandler;
+			}
+		}
 
-            this.GetLifeSpanHandler += (s, e) => e.SetReturnValue(lifeSpanHandler);
-            this.GetRequestHandler += (s, e) => e.SetReturnValue(requestHandler);
-			
-
+		internal CfxRequestHandler RequestHandler
+		{
+			get
+			{
+				if (requestHandler == null)
+				{
+					requestHandler = new CfxRequestHandler();
+					this.GetRequestHandler += (handler, e) => e.SetReturnValue(requestHandler);
+				}
+				return requestHandler;
+			}
 		}
 
         internal CfxContextMenuHandler ContextMenuHandler {
@@ -177,31 +169,5 @@ namespace NetDimension.NanUI.ChromiumCore
                 return keyboardHandler;
             }
         }
-
-		internal CfxRenderHandler RenderHandler
-		{
-			get
-			{
-				if (renderHandler == null)
-				{
-					renderHandler = new CfxRenderHandler();
-					this.GetRenderHandler += (s, e) => e.SetReturnValue(renderHandler);
-				}
-				return renderHandler;
-			}
-		}
-
-		//internal CfxRenderProcessHandler RenderProcessHandler
-		//{
-		//	get
-		//	{
-		//		if (renderProcessHandler == null)
-		//		{
-		//			renderProcessHandler = new CfxRenderProcessHandler();
-		//			this.GetRenderProcessHandler += (s, e) => e.SetReturnValue(renderProcessHandler);
-		//		}
-		//		return renderProcessHandler;
-		//	}
-		//}
-	}
+    }
 }

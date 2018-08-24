@@ -1,32 +1,8 @@
-// Copyright (c) 2014-2015 Wolfgang Borgsmüller
+// Copyright (c) 2014-2017 Wolfgang Borgsmüller
 // All rights reserved.
 // 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
-// are met:
-// 
-// 1. Redistributions of source code must retain the above copyright 
-//    notice, this list of conditions and the following disclaimer.
-// 
-// 2. Redistributions in binary form must reproduce the above copyright 
-//    notice, this list of conditions and the following disclaimer in the 
-//    documentation and/or other materials provided with the distribution.
-// 
-// 3. Neither the name of the copyright holder nor the names of its 
-//    contributors may be used to endorse or promote products derived 
-//    from this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-// COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-// BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS 
-// OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
-// TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
-// USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// This software may be modified and distributed under the terms
+// of the BSD license. See the License.txt file for details.
 
 // Generated file. Do not edit.
 
@@ -54,26 +30,19 @@ namespace Chromium {
     /// See also the original CEF documentation in
     /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
     /// </remarks>
-    public class CfxRequestContext : CfxBase {
-
-        static CfxRequestContext () {
-            CfxApiLoader.LoadCfxRequestContextApi();
-        }
-
-        private static readonly WeakCache weakCache = new WeakCache();
+    public class CfxRequestContext : CfxBaseLibrary {
 
         internal static CfxRequestContext Wrap(IntPtr nativePtr) {
             if(nativePtr == IntPtr.Zero) return null;
-            lock(weakCache) {
-                var wrapper = (CfxRequestContext)weakCache.Get(nativePtr);
-                if(wrapper == null) {
-                    wrapper = new CfxRequestContext(nativePtr);
-                    weakCache.Add(wrapper);
-                } else {
-                    CfxApi.cfx_release(nativePtr);
-                }
-                return wrapper;
+            bool isNew = false;
+            var wrapper = (CfxRequestContext)weakCache.GetOrAdd(nativePtr, () =>  {
+                isNew = true;
+                return new CfxRequestContext(nativePtr);
+            });
+            if(!isNew) {
+                CfxApi.cfx_release(nativePtr);
             }
+            return wrapper;
         }
 
 
@@ -87,7 +56,7 @@ namespace Chromium {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
         public static CfxRequestContext GetGlobalContext() {
-            return CfxRequestContext.Wrap(CfxApi.cfx_request_context_get_global_context());
+            return CfxRequestContext.Wrap(CfxApi.RequestContext.cfx_request_context_get_global_context());
         }
 
         /// <summary>
@@ -99,7 +68,7 @@ namespace Chromium {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
         public static CfxRequestContext CreateContext(CfxRequestContextSettings settings, CfxRequestContextHandler handler) {
-            return CfxRequestContext.Wrap(CfxApi.cfx_request_context_create_context(CfxRequestContextSettings.Unwrap(settings), CfxRequestContextHandler.Unwrap(handler)));
+            return CfxRequestContext.Wrap(CfxApi.RequestContext.cfx_request_context_create_context(CfxRequestContextSettings.Unwrap(settings), CfxRequestContextHandler.Unwrap(handler)));
         }
 
         /// <summary>
@@ -113,7 +82,7 @@ namespace Chromium {
         /// </remarks>
         public bool IsGlobal {
             get {
-                return 0 != CfxApi.cfx_request_context_is_global(NativePtr);
+                return 0 != CfxApi.RequestContext.cfx_request_context_is_global(NativePtr);
             }
         }
 
@@ -126,7 +95,7 @@ namespace Chromium {
         /// </remarks>
         public CfxRequestContextHandler Handler {
             get {
-                return CfxRequestContextHandler.Wrap(CfxApi.cfx_request_context_get_handler(NativePtr));
+                return CfxRequestContextHandler.Wrap(CfxApi.RequestContext.cfx_request_context_get_handler(NativePtr));
             }
         }
 
@@ -140,7 +109,7 @@ namespace Chromium {
         /// </remarks>
         public string CachePath {
             get {
-                return StringFunctions.ConvertStringUserfree(CfxApi.cfx_request_context_get_cache_path(NativePtr));
+                return StringFunctions.ConvertStringUserfree(CfxApi.RequestContext.cfx_request_context_get_cache_path(NativePtr));
             }
         }
 
@@ -153,7 +122,7 @@ namespace Chromium {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
         public bool IsSame(CfxRequestContext other) {
-            return 0 != CfxApi.cfx_request_context_is_same(NativePtr, CfxRequestContext.Unwrap(other));
+            return 0 != CfxApi.RequestContext.cfx_request_context_is_same(NativePtr, CfxRequestContext.Unwrap(other));
         }
 
         /// <summary>
@@ -165,7 +134,7 @@ namespace Chromium {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
         public bool IsSharingWith(CfxRequestContext other) {
-            return 0 != CfxApi.cfx_request_context_is_sharing_with(NativePtr, CfxRequestContext.Unwrap(other));
+            return 0 != CfxApi.RequestContext.cfx_request_context_is_sharing_with(NativePtr, CfxRequestContext.Unwrap(other));
         }
 
         /// <summary>
@@ -181,7 +150,7 @@ namespace Chromium {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
         public CfxCookieManager GetDefaultCookieManager(CfxCompletionCallback callback) {
-            return CfxCookieManager.Wrap(CfxApi.cfx_request_context_get_default_cookie_manager(NativePtr, CfxCompletionCallback.Unwrap(callback)));
+            return CfxCookieManager.Wrap(CfxApi.RequestContext.cfx_request_context_get_default_cookie_manager(NativePtr, CfxCompletionCallback.Unwrap(callback)));
         }
 
         /// <summary>
@@ -204,7 +173,7 @@ namespace Chromium {
         public bool RegisterSchemeHandlerFactory(string schemeName, string domainName, CfxSchemeHandlerFactory factory) {
             var schemeName_pinned = new PinnedString(schemeName);
             var domainName_pinned = new PinnedString(domainName);
-            var __retval = CfxApi.cfx_request_context_register_scheme_handler_factory(NativePtr, schemeName_pinned.Obj.PinnedPtr, schemeName_pinned.Length, domainName_pinned.Obj.PinnedPtr, domainName_pinned.Length, CfxSchemeHandlerFactory.Unwrap(factory));
+            var __retval = CfxApi.RequestContext.cfx_request_context_register_scheme_handler_factory(NativePtr, schemeName_pinned.Obj.PinnedPtr, schemeName_pinned.Length, domainName_pinned.Obj.PinnedPtr, domainName_pinned.Length, CfxSchemeHandlerFactory.Unwrap(factory));
             schemeName_pinned.Obj.Free();
             domainName_pinned.Obj.Free();
             return 0 != __retval;
@@ -219,7 +188,7 @@ namespace Chromium {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
         public bool ClearSchemeHandlerFactories() {
-            return 0 != CfxApi.cfx_request_context_clear_scheme_handler_factories(NativePtr);
+            return 0 != CfxApi.RequestContext.cfx_request_context_clear_scheme_handler_factories(NativePtr);
         }
 
         /// <summary>
@@ -234,7 +203,7 @@ namespace Chromium {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
         public void PurgePluginListCache(bool reloadPages) {
-            CfxApi.cfx_request_context_purge_plugin_list_cache(NativePtr, reloadPages ? 1 : 0);
+            CfxApi.RequestContext.cfx_request_context_purge_plugin_list_cache(NativePtr, reloadPages ? 1 : 0);
         }
 
         /// <summary>
@@ -247,7 +216,7 @@ namespace Chromium {
         /// </remarks>
         public bool HasPreference(string name) {
             var name_pinned = new PinnedString(name);
-            var __retval = CfxApi.cfx_request_context_has_preference(NativePtr, name_pinned.Obj.PinnedPtr, name_pinned.Length);
+            var __retval = CfxApi.RequestContext.cfx_request_context_has_preference(NativePtr, name_pinned.Obj.PinnedPtr, name_pinned.Length);
             name_pinned.Obj.Free();
             return 0 != __retval;
         }
@@ -265,7 +234,7 @@ namespace Chromium {
         /// </remarks>
         public CfxValue GetPreference(string name) {
             var name_pinned = new PinnedString(name);
-            var __retval = CfxApi.cfx_request_context_get_preference(NativePtr, name_pinned.Obj.PinnedPtr, name_pinned.Length);
+            var __retval = CfxApi.RequestContext.cfx_request_context_get_preference(NativePtr, name_pinned.Obj.PinnedPtr, name_pinned.Length);
             name_pinned.Obj.Free();
             return CfxValue.Wrap(__retval);
         }
@@ -283,7 +252,7 @@ namespace Chromium {
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
         public CfxDictionaryValue GetAllPreferences(bool includeDefaults) {
-            return CfxDictionaryValue.Wrap(CfxApi.cfx_request_context_get_all_preferences(NativePtr, includeDefaults ? 1 : 0));
+            return CfxDictionaryValue.Wrap(CfxApi.RequestContext.cfx_request_context_get_all_preferences(NativePtr, includeDefaults ? 1 : 0));
         }
 
         /// <summary>
@@ -298,7 +267,7 @@ namespace Chromium {
         /// </remarks>
         public bool CanSetPreference(string name) {
             var name_pinned = new PinnedString(name);
-            var __retval = CfxApi.cfx_request_context_can_set_preference(NativePtr, name_pinned.Obj.PinnedPtr, name_pinned.Length);
+            var __retval = CfxApi.RequestContext.cfx_request_context_can_set_preference(NativePtr, name_pinned.Obj.PinnedPtr, name_pinned.Length);
             name_pinned.Obj.Free();
             return 0 != __retval;
         }
@@ -314,28 +283,213 @@ namespace Chromium {
         /// See also the original CEF documentation in
         /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
         /// </remarks>
-        public bool SetPreference(string name, CfxValue value, ref string error) {
+        public bool SetPreference(string name, CfxValue value, out string error) {
             var name_pinned = new PinnedString(name);
-            var error_pinned = new PinnedString(error);
-            IntPtr error_str = error_pinned.Obj.PinnedPtr;
-            int error_length = error_pinned.Length;
-            var __retval = CfxApi.cfx_request_context_set_preference(NativePtr, name_pinned.Obj.PinnedPtr, name_pinned.Length, CfxValue.Unwrap(value), ref error_str, ref error_length);
+            IntPtr error_str;
+            int error_length;
+            var __retval = CfxApi.RequestContext.cfx_request_context_set_preference(NativePtr, name_pinned.Obj.PinnedPtr, name_pinned.Length, CfxValue.Unwrap(value), out error_str, out error_length);
             name_pinned.Obj.Free();
-            if(error_str != error_pinned.Obj.PinnedPtr) {
-                if(error_length > 0) {
-                    error = System.Runtime.InteropServices.Marshal.PtrToStringUni(error_str, error_length);
-                    // free the native string?
-                } else {
-                    error = null;
-                }
+            if(error_length > 0) {
+                error = System.Runtime.InteropServices.Marshal.PtrToStringUni(error_str, error_length);
+                // free the native string?
+            } else {
+                error = null;
             }
-            error_pinned.Obj.Free();
             return 0 != __retval;
         }
 
-        internal override void OnDispose(IntPtr nativePtr) {
-            weakCache.Remove(nativePtr);
-            base.OnDispose(nativePtr);
+        /// <summary>
+        /// Clears all certificate exceptions that were added as part of handling
+        /// CfxRequestHandler.OnCertificateError(). If you call this it is
+        /// recommended that you also call close_all_connections() or you risk not
+        /// being prompted again for server certificates if you reconnect quickly. If
+        /// |callback| is non-NULL it will be executed on the UI thread after
+        /// completion.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public void ClearCertificateExceptions(CfxCompletionCallback callback) {
+            CfxApi.RequestContext.cfx_request_context_clear_certificate_exceptions(NativePtr, CfxCompletionCallback.Unwrap(callback));
+        }
+
+        /// <summary>
+        /// Clears all active and idle connections that Chromium currently has. This is
+        /// only recommended if you have released all other CEF objects but don't yet
+        /// want to call Cfxshutdown(). If |callback| is non-NULL it will be executed
+        /// on the UI thread after completion.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public void CloseAllConnections(CfxCompletionCallback callback) {
+            CfxApi.RequestContext.cfx_request_context_close_all_connections(NativePtr, CfxCompletionCallback.Unwrap(callback));
+        }
+
+        /// <summary>
+        /// Attempts to resolve |origin| to a list of associated IP addresses.
+        /// |callback| will be executed on the UI thread after completion.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public void ResolveHost(string origin, CfxResolveCallback callback) {
+            var origin_pinned = new PinnedString(origin);
+            CfxApi.RequestContext.cfx_request_context_resolve_host(NativePtr, origin_pinned.Obj.PinnedPtr, origin_pinned.Length, CfxResolveCallback.Unwrap(callback));
+            origin_pinned.Obj.Free();
+        }
+
+        /// <summary>
+        /// Attempts to resolve |origin| to a list of associated IP addresses using
+        /// cached data. |resolvedIps| will be populated with the list of resolved IP
+        /// addresses or NULL if no cached data is available. Returns ERR_NONE on
+        /// success. This function must be called on the browser process IO thread.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public CfxErrorCode ResolveHostCached(string origin, System.Collections.Generic.List<string> resolvedIps) {
+            var origin_pinned = new PinnedString(origin);
+            PinnedString[] resolvedIps_handles;
+            var resolvedIps_unwrapped = StringFunctions.UnwrapCfxStringList(resolvedIps, out resolvedIps_handles);
+            var __retval = CfxApi.RequestContext.cfx_request_context_resolve_host_cached(NativePtr, origin_pinned.Obj.PinnedPtr, origin_pinned.Length, resolvedIps_unwrapped);
+            origin_pinned.Obj.Free();
+            StringFunctions.FreePinnedStrings(resolvedIps_handles);
+            StringFunctions.CfxStringListCopyToManaged(resolvedIps_unwrapped, resolvedIps);
+            CfxApi.Runtime.cfx_string_list_free(resolvedIps_unwrapped);
+            return (CfxErrorCode)__retval;
+        }
+
+        /// <summary>
+        /// Load an extension.
+        /// 
+        /// If extension resources will be read from disk using the default load
+        /// implementation then |rootDirectory| should be the absolute path to the
+        /// extension resources directory and |manifest| should be NULL. If extension
+        /// resources will be provided by the client (e.g. via CfxRequestHandler
+        /// and/or CfxExtensionHandler) then |rootDirectory| should be a path
+        /// component unique to the extension (if not absolute this will be internally
+        /// prefixed with the PK_DIR_RESOURCES path) and |manifest| should contain the
+        /// contents that would otherwise be read from the "manifest.json" file on
+        /// disk.
+        /// 
+        /// The loaded extension will be accessible in all contexts sharing the same
+        /// storage (HasExtension returns true (1)). However, only the context on which
+        /// this function was called is considered the loader (DidLoadExtension returns
+        /// true (1)) and only the loader will receive CfxRequestContextHandler
+        /// callbacks for the extension.
+        /// 
+        /// CfxExtensionHandler.OnExtensionLoaded will be called on load success or
+        /// CfxExtensionHandler.OnExtensionLoadFailed will be called on load
+        /// failure.
+        /// 
+        /// If the extension specifies a background script via the "background"
+        /// manifest key then CfxExtensionHandler.OnBeforeBackgroundBrowser will be
+        /// called to create the background browser. See that function for additional
+        /// information about background scripts.
+        /// 
+        /// For visible extension views the client application should evaluate the
+        /// manifest to determine the correct extension URL to load and then pass that
+        /// URL to the CfxBrowserHost.CreateBrowser* function after the extension
+        /// has loaded. For example, the client can look for the "browser_action"
+        /// manifest key as documented at
+        /// https://developer.chrome.com/extensions/browserAction. Extension URLs take
+        /// the form "chrome-extension://&lt;extension_id>/&lt;path>".
+        /// 
+        /// Browsers that host extensions differ from normal browsers as follows:
+        ///  - Can access chrome.* JavaScript APIs if allowed by the manifest. Visit
+        ///    chrome://extensions-support for the list of extension APIs currently
+        ///    supported by CEF.
+        ///  - Main frame navigation to non-extension content is blocked.
+        ///  - Pinch-zooming is disabled.
+        ///  - CfxBrowserHost.GetExtension returns the hosted extension.
+        ///  - CfxBrowserHost.IsBackgroundHost returns true for background hosts.
+        /// 
+        /// See https://developer.chrome.com/extensions for extension implementation
+        /// and usage documentation.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public void LoadExtension(string rootDirectory, CfxDictionaryValue manifest, CfxExtensionHandler handler) {
+            var rootDirectory_pinned = new PinnedString(rootDirectory);
+            CfxApi.RequestContext.cfx_request_context_load_extension(NativePtr, rootDirectory_pinned.Obj.PinnedPtr, rootDirectory_pinned.Length, CfxDictionaryValue.Unwrap(manifest), CfxExtensionHandler.Unwrap(handler));
+            rootDirectory_pinned.Obj.Free();
+        }
+
+        /// <summary>
+        /// Returns true (1) if this context was used to load the extension identified
+        /// by |extensionId|. Other contexts sharing the same storage will also have
+        /// access to the extension (see HasExtension). This function must be called on
+        /// the browser process UI thread.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public bool DidLoadExtension(string extensionId) {
+            var extensionId_pinned = new PinnedString(extensionId);
+            var __retval = CfxApi.RequestContext.cfx_request_context_did_load_extension(NativePtr, extensionId_pinned.Obj.PinnedPtr, extensionId_pinned.Length);
+            extensionId_pinned.Obj.Free();
+            return 0 != __retval;
+        }
+
+        /// <summary>
+        /// Returns true (1) if this context has access to the extension identified by
+        /// |extensionId|. This may not be the context that was used to load the
+        /// extension (see DidLoadExtension). This function must be called on the
+        /// browser process UI thread.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public bool HasExtension(string extensionId) {
+            var extensionId_pinned = new PinnedString(extensionId);
+            var __retval = CfxApi.RequestContext.cfx_request_context_has_extension(NativePtr, extensionId_pinned.Obj.PinnedPtr, extensionId_pinned.Length);
+            extensionId_pinned.Obj.Free();
+            return 0 != __retval;
+        }
+
+        /// <summary>
+        /// Retrieve the list of all extensions that this context has access to (see
+        /// HasExtension). |extensionIds| will be populated with the list of extension
+        /// ID values. Returns true (1) on success. This function must be called on the
+        /// browser process UI thread.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public bool GetExtensions(System.Collections.Generic.List<string> extensionIds) {
+            PinnedString[] extensionIds_handles;
+            var extensionIds_unwrapped = StringFunctions.UnwrapCfxStringList(extensionIds, out extensionIds_handles);
+            var __retval = CfxApi.RequestContext.cfx_request_context_get_extensions(NativePtr, extensionIds_unwrapped);
+            StringFunctions.FreePinnedStrings(extensionIds_handles);
+            StringFunctions.CfxStringListCopyToManaged(extensionIds_unwrapped, extensionIds);
+            CfxApi.Runtime.cfx_string_list_free(extensionIds_unwrapped);
+            return 0 != __retval;
+        }
+
+        /// <summary>
+        /// Returns the extension matching |extensionId| or NULL if no matching
+        /// extension is accessible in this context (see HasExtension). This function
+        /// must be called on the browser process UI thread.
+        /// </summary>
+        /// <remarks>
+        /// See also the original CEF documentation in
+        /// <see href="https://bitbucket.org/chromiumfx/chromiumfx/src/tip/cef/include/capi/cef_request_context_capi.h">cef/include/capi/cef_request_context_capi.h</see>.
+        /// </remarks>
+        public CfxExtension GetExtension(string extensionId) {
+            var extensionId_pinned = new PinnedString(extensionId);
+            var __retval = CfxApi.RequestContext.cfx_request_context_get_extension(NativePtr, extensionId_pinned.Obj.PinnedPtr, extensionId_pinned.Length);
+            extensionId_pinned.Obj.Free();
+            return CfxExtension.Wrap(__retval);
         }
     }
 }
